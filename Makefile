@@ -20,7 +20,7 @@ pack: Vagrantfile $(CLEAN_PP) $(MODULES_PP)
 	vagrant ssh -- "sudo puppet apply --modulepath=$(SYNC_DIR)/$(MODULES_PP) $(SYNC_DIR)/$(CLEAN_PP)"
 	vagrant halt || true
 	@echo "Packaging the box"
-	vagrant package
+	vagrant package srv6
 
 destroy: Vagrantfile
 	vagrant destroy
