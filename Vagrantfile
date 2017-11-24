@@ -31,6 +31,7 @@ Vagrant.configure("2") do |config|
 
 	config.ssh.forward_x11 = true
 	config.ssh.keep_alive = true
+	config.ssh.insert_key = false
 
 	config.vm.provider "virtualbox" do |v|
 		v.name = "srv6"
