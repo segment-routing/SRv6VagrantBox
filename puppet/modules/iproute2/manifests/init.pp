@@ -20,8 +20,7 @@ class iproute2 (
 			    sed -i -e 's/TMPDIR/TEMPDIR/g' ${iproute2_cwd}/configure &&\
 			    configure &&\
 			    make &&\
-			    make install &&\
-			    touch /home/vagrant/.newiproute;",
+			    make install;",
 	}
 }
 

@@ -26,6 +26,7 @@ Vagrant.configure("2") do |config|
 			"kernel_path": "/vagrant/kernel",
 			"temp_path": "/tmp",
 			"home_path": "/home/vagrant",
+			"non_root_user": "vagrant",
 		}
 	end
 
@@ -34,7 +35,6 @@ Vagrant.configure("2") do |config|
 	config.ssh.insert_key = false
 
 	config.vm.provider "virtualbox" do |v|
-		v.name = "srv6"
 	end
 end
 
