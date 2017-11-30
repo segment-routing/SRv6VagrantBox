@@ -10,8 +10,8 @@ class nanonet (
 
 	exec { 'nanonet-download':
 		require => Class['common'],
+		creates => $nanonet_cwd,
 		command => "git clone ${git_repo} ${nanonet_cwd} &&\
 			    chown -R ${user}:${user} ${nanonet_cwd}",
 	}
 }
-
