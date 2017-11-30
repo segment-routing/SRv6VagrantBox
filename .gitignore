@@ -1,4 +1,14 @@
 *.swp
 .vagrant/
 *~
+*.idea/
+
+srv6.box
+kernel/*.deb
+kernel/*.changes
+kernel/*.dsc
+kernel/*.tar.gz
+
+*.pyc
+__pycache__/
 
