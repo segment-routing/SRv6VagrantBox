@@ -25,7 +25,6 @@ Vagrant.configure("2") do |config|
 		puppet.facter = {
 			"kernel_path": "/vagrant/kernel",
 			"temp_path": "/tmp",
-			"home_path": "/home/vagrant",
 			"non_root_user": "vagrant",
 		}
 	end
