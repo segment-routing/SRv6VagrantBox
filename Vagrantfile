@@ -26,6 +26,10 @@ Vagrant.configure("2") do |config|
 			"kernel_path": "/vagrant/kernel",
 			"temp_path": "/tmp",
 			"non_root_user": "vagrant",
+			"kernel_version": "4.14.0",
+			"kernel_local_version": "-srv6",
+			"kernel_kdeb_version": "4.14.0-1",
+			"iproute2_version": "v4.14.0",
 		}
 	end
 
@@ -36,4 +40,3 @@ Vagrant.configure("2") do |config|
 	config.vm.provider "virtualbox" do |v|
 	end
 end
-

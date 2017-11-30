@@ -17,16 +17,18 @@ class { 'common': }
 
 class { 'srv6_kernel':
 	package_path => $::kernel_path,
+	kernel_version => $::kernel_version,
+	local_version => $::kernel_local_version,
+	kdeb_version => $::kernel_kdeb_version,
 }
 
 class { 'iproute2':
 	require => Class['common'],
-	temp_path => $::temp_path,
+	version => $::iproute2_version,
 }
 
 class { 'nanonet':
 	require => Class['common'],
-	clone_path => $::temp_path,
 	install_path => $::home_path,
 	user => $::non_root_user
 }
