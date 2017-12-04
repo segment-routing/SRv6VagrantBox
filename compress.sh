@@ -6,8 +6,8 @@
 
 echo 'Cleanup bash history'
 unset HISTFILE
-[ -f /root/.bash_history ] && rm /root/.bash_history
-[ -f /home/vagrant/.bash_history ] && rm /home/vagrant/.bash_history
+[ -f /root/.bash_history ] && echo -n "" > /root/.bash_history
+echo -n "" > /home/vagrant/.bash_history && chown vagrant:vagrant /home/vagrant/.bash_history
  
 echo 'Cleanup log files'
 find /var/log -type f | while read f; do echo -ne '' > $f; done;
