@@ -9,6 +9,5 @@ Generated Vagrant boxes are available on the [Vagrant Cloud](https://app.vagrant
 - After that, run the following commands to produce and test the Vagrant box.
 ```bash
 $ make
-$ make pack
 $ make test
 ```

@@ -1,46 +1,54 @@
+SHELL := /bin/bash
 
 SYNC_DIR=/vagrant/
-DEFAULT_PP=puppet/manifests/default.pp
-CLEAN_PP=puppet/manifests/clean.pp
-MODULES_PP=puppet/modules/
-BOX=srv6.box
-TEST_BOX_NAME="test/SRv6"
+TEST_BOX_NAME=test/SRv6
+LIBVIRT_VOL_NAME=test-VAGRANTSLASH-SRv6_vagrant_box_image_0.img
 
+DISTRIBUTION=ubuntu-16.04
+ARCH=amd64
 
-.PHONY: build pack clean test clean_test
+PROVIDERS=virtualbox libvirt
+BOX_MAPPING_DECL=declare -A BOX_MAPPING=([bento/builds/$(DISTRIBUTION).virtualbox.box]=virtualbox [bento/builds/$(DISTRIBUTION).libvirt.box]=libvirt)
+BUILDER_MAPPING_DECL=declare -A BUILDER_MAPPING=([virtualbox]=virtualbox-iso [libvirt]=qemu)
 
-build: clean Vagrantfile $(DEFAULT_PP)
-	vagrant up
-	@echo "Updating GuestAdditions to the new kernel"
-	vagrant halt || true
-	vagrant up
-	vagrant halt || true
+PROVIDER_CLEANS=$(addsuffix .clean,$(PROVIDERS))
+PROVIDER_TESTS=$(addsuffix .test,$(PROVIDERS))
+PROVIDER_BOXES=$(addprefix bento/builds/$(DISTRIBUTION).,$(addsuffix .box,$(PROVIDERS)))
 
-$(BOX): Vagrantfile $(CLEAN_PP) $(MODULES_PP)
-	if vagrant status | grep -q "not created"; then \
-		make; \
-	fi
-	@echo "Cleaning up and compress the box"
-	vagrant up
-	vagrant ssh -- "sudo puppet apply --modulepath=$(SYNC_DIR)/$(MODULES_PP) $(SYNC_DIR)/$(CLEAN_PP)"
-	vagrant halt || true
-	@echo "Packaging the box"
-	rm -f $(BOX)
-	vagrant package --output $(BOX)
+PUPPET=bento/ubuntu/puppet
+SCRIPTS=bento/ubuntu/scripts
 
-pack:
-	rm -f $(BOX)
-	make $(BOX)
+.PHONY: pack sync_scripts clean test clean_test
 
-test: $(BOX) clean_test
-	vagrant box add $(BOX) --name $(TEST_BOX_NAME)
-	cd test && vagrant up
+pack: SHELL:=/bin/bash
+pack: sync_scripts $(PROVIDER_BOXES)
+
+sync_scripts:
+	cp -r puppet $(PUPPET)
+	cp scripts/* $(SCRIPTS)
+	cp $(DISTRIBUTION)-$(ARCH).json bento/ubuntu
+
+$(PROVIDER_BOXES):
+	@echo "Building box $@"
+	$(BOX_MAPPING_DECL); \
+		$(BUILDER_MAPPING_DECL); \
+		echo "Using packer builder $${BUILDER_MAPPING[$${BOX_MAPPING[$@]}]}"; \
+		cd bento/ubuntu && packer build -only=$${BUILDER_MAPPING[$${BOX_MAPPING[$@]}]} $(DISTRIBUTION)-$(ARCH).json
+
+test: $(PROVIDER_TESTS)
+
+%.test: bento/builds/$(DISTRIBUTION).%.box clean_test
+	vagrant box add $< --name $(TEST_BOX_NAME) --provider $(basename $@)
+	cd test && vagrant up --provider $(basename $@)
 	cd test && vagrant ssh -- "sudo python $(SYNC_DIR)/run_tests.py"
+	$(MAKE) clean_test
 
 clean_test:
 	cd test && vagrant destroy -f
 	vagrant box remove $(TEST_BOX_NAME) || true
+	virsh vol-delete $(LIBVIRT_VOL_NAME) --pool default || true
+	sudo systemctl restart libvirtd
 
-clean: clean_test Vagrantfile test/Vagrantfile
-	rm -f $(BOX)
-	vagrant destroy -f
+clean: clean_test
+	rm -rf bento/builds/*
+
