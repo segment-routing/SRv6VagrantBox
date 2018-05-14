@@ -11,3 +11,10 @@ Generated Vagrant boxes are available on the [Vagrant Cloud](https://app.vagrant
 $ make
 $ make test
 ```
+
+# Required software
+
+- [Virtualbox](https://www.virtualbox.org/wiki/Downloads) with its extension pack
+- [QEMU](https://www.qemu.org/)
+- [Vagrant](https://www.vagrantup.com/)
+- [Vagrant-libvirt plugin](https://github.com/vagrant-libvirt/vagrant-libvirt)
