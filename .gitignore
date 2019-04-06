@@ -8,6 +8,8 @@ kernel/*.deb
 kernel/*.changes
 kernel/*.dsc
 kernel/*.tar.gz
+kernel/*.diff.gz
+kernel/*.buildinfo
 
 *.pyc
 __pycache__/
